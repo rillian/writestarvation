@@ -11,16 +11,28 @@ fn reader(lock: Arc<RwLock<()>>) {
         let _guard = lock.read().expect("Poisoned read lock!");
         let read_delay = start.elapsed();
         thread::sleep(delay);
-        println!("Reader waited {} ms for a read lock, held it {} ms {:?}",
-            read_delay.as_millis(), delay.as_millis(), id);
+        println!("Reader waited {} μs for a read lock, held it {} ms {:?}",
+            read_delay.as_micros(), delay.as_millis(), id);
     }
 }
 
 fn main() {
     println!("Hello, world!");
 
+    // Create a lock
     let lock = Arc::new(RwLock::new(()));
-    let rlock = lock.clone();
-    let r = thread::spawn(move || reader(rlock));
-    r.join().unwrap();
+    // Pass it to a number of read threads
+    let count = match thread::available_parallelism() {
+        Ok(value) => value.get(),
+        Err(_) => 4,
+    };
+    let readers: Vec<thread::JoinHandle<_>> = (0..count).into_iter().map(|_| {
+        let rlock = lock.clone();
+        thread::spawn(move || reader(rlock))
+    }).collect();
+
+    // Wait for threads to return
+    for r in readers.into_iter() {
+        r.join().unwrap();
+    }
 }
