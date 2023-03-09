@@ -1,3 +1,6 @@
+/// Test for write-starvation with RwLock
+
+use rand::Rng;
 use std::sync::{Arc, RwLock};
 use std::thread;
 use std::time::{Duration, Instant};
@@ -5,8 +8,10 @@ use std::time::{Duration, Instant};
 fn reader(lock: Arc<RwLock<()>>) {
     // loop forever, holding a read lock for most of the time
     let id = thread::current().id();
+    let mut rng = rand::thread_rng();
+    let dist = rand::distributions::Uniform::new(10,1000);
     loop {
-        let delay = Duration::from_millis(333);
+        let delay = Duration::from_millis(rng.sample(dist));
         let start = Instant::now();
         let _guard = lock.read().expect("Poisoned read lock!");
         let read_delay = start.elapsed();
