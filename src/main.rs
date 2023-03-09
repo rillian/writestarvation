@@ -52,7 +52,7 @@ fn main() {
         Err(_) => 4,
     };
     let mut threads = Vec::with_capacity(count + 1);
-    println!("spawning {} threads...", threads.capacity());
+    println!("spawning {count} reader threads...");
 
     // Pass the lock to a number of read threads
     for _ in 0..count {
@@ -62,6 +62,10 @@ fn main() {
     }
 
     // Pass the lock to a write thread
+    // Readers should been contending for the lock,
+    // so the lock implementation must prioritize
+    // writers if this makes progress at all.
+    println!("spawning 1 writer thread...");
     let w = thread::spawn(move || writer(lock));
     threads.push(w);
 
