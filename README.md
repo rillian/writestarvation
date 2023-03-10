@@ -74,8 +74,7 @@ is released. Unless there is contention from multiple writer
 requests, this should quickly return to a few μs delay.
 
 If the writer is starved, it's expected read lock delays are
-all short, since none of them need to wait for the quick
-write lock.
+all short, since none of them need to wait for the write lock.
 ```
 $ cargo +1.60.0 run
 [...]
