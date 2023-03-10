@@ -31,6 +31,17 @@ writer is succeeding, it will report waiting about as long as
 the readers hold their locks for. If the writer is starving,
 it won't report acquiring the lock at all.
 
+## Results
+
+Reports so far where write locks succeed under contention:
+
+- 🔏 Rust 1.68.0, x86_64-pc-linux-gnu, Fedora Linux 6.1.13-200.fc37
+- 🔏 Rust 1.68.0, aarch64-apple-darwin, macOS Ventura 13.2
+
+Reports with writer starvation:
+
+- 🙅 Rust 1.60.0, x86_64-pc-linux-gnu, Fedora Linux 6.1.13-200.fc37
+
 ## Running
 
 Build and run the program for a bit, and look for `Writer waited` lines.
